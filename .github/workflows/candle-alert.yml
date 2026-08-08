@@ -1,0 +1,26 @@
+name: Candle 4H Telegram Alert
+
+on:
+  schedule:
+    # UTC 기준 4시간마다 봉 마감 5분 후 (KST 09,13,17,21,01,05시)
+    - cron: "5 0,4,8,12,16,20 * * *"
+  workflow_dispatch: {}   # 수동 실행(테스트용) 버튼
+
+jobs:
+  alert:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Send candle alert
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SYMBOL: BTCUSDT
+          DOJI_PCT: "5"
+          CME_GAP_PCT: "0.25"
+        run: python pattern_bot.py
