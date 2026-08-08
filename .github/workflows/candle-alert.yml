@@ -24,3 +24,11 @@ jobs:
           DOJI_PCT: "5"
           CME_GAP_PCT: "0.25"
         run: python pattern_bot.py
+
+      - name: Send indicator signal alert
+        if: ${{ always() }}
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SYMBOL: BTCUSDT
+        run: python signal_alert.py
