@@ -27,23 +27,52 @@ def http_get(url):
         return r.read().decode()
 
 
-def get_4h_candles():
-    """Bybit 스팟 4시간봉. 마감된 캔들만 오래된→최신 순으로 반환."""
-    url = (f"https://api.bybit.com/v5/market/kline"
-           f"?category=spot&symbol={SYMBOL}&interval=240&limit=6")
-    data = json.loads(http_get(url))
-    rows = data["result"]["list"]  # [startMs, o, h, l, c, vol, turnover], 최신 먼저
-    candles = [{
-        "start": int(x[0]),
+def _from_coinbase():
+    """Coinbase 4시간봉. [time, low, high, open, close, volume], 최신 먼저. time=초(시작)."""
+    pair = "BTC-USD" if SYMBOL.upper().startswith("BTC") else SYMBOL
+    url = f"https://api.exchange.coinbase.com/products/{pair}/candles?granularity=14400"
+    rows = json.loads(http_get(url))
+    return [{
+        "start": int(x[0]) * 1000,
+        "open":  float(x[3]),
+        "high":  float(x[2]),
+        "low":   float(x[1]),
+        "close": float(x[4]),
+    } for x in rows]
+
+
+def _from_kraken():
+    """Kraken 4시간봉. [time, o, h, l, c, ...], 오래된→최신. time=초(시작)."""
+    pair = "XBTUSD" if SYMBOL.upper().startswith("BTC") else SYMBOL
+    url = f"https://api.kraken.com/0/public/OHLC?pair={pair}&interval=240"
+    data = json.loads(http_get(url))["result"]
+    key = next(k for k in data if k != "last")
+    return [{
+        "start": int(x[0]) * 1000,
         "open":  float(x[1]),
         "high":  float(x[2]),
         "low":   float(x[3]),
         "close": float(x[4]),
-    } for x in rows]
-    candles.sort(key=lambda c: c["start"])
-    now_ms = int(time.time() * 1000)
-    four_h = 4 * 3600 * 1000
-    return [c for c in candles if c["start"] + four_h <= now_ms]  # 마감된 것만
+    } for x in data[key]]
+
+
+def get_4h_candles():
+    """마감된 4시간봉만 오래된→최신 순으로 반환 (여러 소스 폴백)."""
+    last_err = None
+    for src in (_from_coinbase, _from_kraken):
+        try:
+            candles = src()
+            candles.sort(key=lambda c: c["start"])
+            now_ms = int(time.time() * 1000)
+            four_h = 4 * 3600 * 1000
+            closed = [c for c in candles if c["start"] + four_h <= now_ms]
+            if len(closed) >= 3:
+                return closed
+        except Exception as e:
+            last_err = e
+    if last_err:
+        raise last_err
+    return []
 
 
 def get_cme_gap_pct():
