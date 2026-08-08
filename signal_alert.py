@@ -125,7 +125,7 @@ def sig_volume(c):
     if sd == 0:
         return None
     z = (vols[-1] - m) / sd
-    return "🍟 거래량 급증 (%.1fσ)" % z if z > 2.5 else None
+    return "🍟 : 거래량 급증 (%.1fσ)" % z if z > 2.5 else None
 
 
 def sig_ema200(c):
@@ -137,9 +137,9 @@ def sig_ema200(c):
     up_now  = e[-1] > e[-1 - off]
     up_prev = e[-2] > e[-2 - off]
     if up_now and not up_prev:
-        return "🌈 200 EMA 상승 전환"
+        return "🌈 : 200 EMA 상승 전환"
     if (not up_now) and up_prev:
-        return "🌈 200 EMA 하락 전환"
+        return "🌈 : 200 EMA 하락 전환"
     return None
 
 
@@ -182,13 +182,13 @@ def sig_rsi_div(c, length=14, lbL=5, lbR=5, rlo=5, rhi=60):
         prev = next((j for j in range(piv - 1, -1, -1) if _is_pivot_low(osc, j, lbL, lbR)), None)
         if prev is not None and rlo <= (piv - prev) <= rhi:
             if osc[piv] > osc[prev] and lows[piv] < lows[prev]:
-                out.append("🍉 RSI 강세(Bull) 다이버전스")
+                out.append("🍉 : RSI 강세(Bull) 다이버전스")
     # Regular Bearish: 가격 HH + RSI LH
     if _is_pivot_high(osc, piv, lbL, lbR):
         prev = next((j for j in range(piv - 1, -1, -1) if _is_pivot_high(osc, j, lbL, lbR)), None)
         if prev is not None and rlo <= (piv - prev) <= rhi:
             if osc[piv] < osc[prev] and highs[piv] > highs[prev]:
-                out.append("🍉 RSI 약세(Bear) 다이버전스")
+                out.append("🍉 : RSI 약세(Bear) 다이버전스")
     return out or None
 
 
@@ -262,9 +262,9 @@ def sig_mfi_div(c, mfiLen=13, ob=75, os_=25, periodK=14, smoothK=3, xbars=10):
 
     out = []
     if divbear and isOB:
-        out.append("🍒 MFI 약세(Bear) 다이버전스")
+        out.append("🍒 : MFI 약세(Bear) 다이버전스")
     if divbull and isOS:
-        out.append("🍒 MFI 강세(Bull) 다이버전스")
+        out.append("🍒 : MFI 강세(Bull) 다이버전스")
     return out or None
 
 
@@ -298,11 +298,9 @@ def main():
         print("신호 없음 — 발송 생략")
         return
 
-    header = ("[보조 지표]\n"
-              "🍟 : 거래량   🌈 : 200 EMA   🍉 : RSI 다이버전스   🍒 : MFI 다이버전스")
     footer = ("• 🦸🏻‍♂️ 차트히어로 소통방에는 4시간봉 맛보기 알람만 제공됩니다.\n"
               "• 그 외 타임프레임 알람은 차트히어로 전용 알람방에서 확인하실 수 있습니다.")
-    msg = header + "\n\n" + "\n".join(fired) + "\n\n" + footer
+    msg = "[보조 지표]\n\n" + "\n".join(fired) + "\n\n" + footer
     print(msg)
     print("---")
     print(send(msg))
