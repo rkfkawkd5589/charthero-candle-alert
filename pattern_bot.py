@@ -128,21 +128,17 @@ def classify(closed):
 
 
 def build_message(r):
-    header = ("[캔들]\n"
-              "🟩 : 양봉 / 🟥 : 음봉   🐕 : 도지 캔들   🐌 : CME 갭 발생   🧲 : FVG 캔들")
-
-    body = []
-    body.append("🟩 양봉" if r["bull"] else ("🟥 음봉" if r["bear"] else "➖ 보합"))
+    lines = ["[캔들]", ""]
+    lines.append("🟩 : 양봉" if r["bull"] else ("🟥 : 음봉" if r["bear"] else "➖ : 보합"))
     if r["doji"]:
-        body.append("🐕 도지 캔들")
-    if r["fvg"] == "bull":
-        body.append("🧲 상승 FVG 발생")
-    elif r["fvg"] == "bear":
-        body.append("🧲 하락 FVG 발생")
+        lines.append("🐕 : 도지 캔들")
     if r["cme"] is not None:
-        body.append(f"🐌 CME 갭 발생 ({r['cme']:+.2f}%)")
-
-    return header + "\n\n" + "\n".join(body)
+        lines.append(f"🐌 : CME 갭 발생 ({r['cme']:+.2f}%)")
+    if r["fvg"] == "bull":
+        lines.append("🧲 : 상승 FVG 캔들")
+    elif r["fvg"] == "bear":
+        lines.append("🧲 : 하락 FVG 캔들")
+    return "\n".join(lines)
 
 
 def send_telegram(text):
