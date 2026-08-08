@@ -1,0 +1,22 @@
+name: 비트시황 Daily Digest
+
+on:
+  schedule:
+    # 매일 오후 8시 KST = 11:00 UTC
+    - cron: "0 11 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Send 비트시황 digest
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          DIGEST_CHAT_ID: ${{ secrets.DIGEST_CHAT_ID }}
+          SYMBOL: BTCUSDT
+        run: python bitsang_digest.py
