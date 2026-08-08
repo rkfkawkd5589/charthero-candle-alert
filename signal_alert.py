@@ -298,7 +298,11 @@ def main():
         print("신호 없음 — 발송 생략")
         return
 
-    msg = "🔔 [BTC 4H 보조지표 신호]\n\n" + "\n".join(fired)
+    header = ("[보조 지표]\n"
+              "🍟 : 거래량   🌈 : 200 EMA   🍉 : RSI 다이버전스   🍒 : MFI 다이버전스")
+    footer = ("• 🦸🏻‍♂️ 차트히어로 소통방에는 4시간봉 맛보기 알람만 제공됩니다.\n"
+              "• 그 외 타임프레임 알람은 차트히어로 전용 알람방에서 확인하실 수 있습니다.")
+    msg = header + "\n\n" + "\n".join(fired) + "\n\n" + footer
     print(msg)
     print("---")
     print(send(msg))
