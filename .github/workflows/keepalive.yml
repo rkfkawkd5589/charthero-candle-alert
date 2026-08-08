@@ -1,0 +1,22 @@
+name: Keepalive (60일 자동정지 방지)
+
+on:
+  schedule:
+    # 매달 1일, 15일 03:00 UTC — 60일 넘기지 않도록 활동 유지
+    - cron: "0 3 1,15 * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Empty keepalive commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit --allow-empty -m "chore: keepalive (prevent 60-day auto-disable)"
+          git push
