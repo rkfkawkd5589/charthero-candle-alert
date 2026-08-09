@@ -67,7 +67,8 @@ def build_digest(c):
     m = recent_fire(s.sig_mfi_div, c)
     ind.append(m[0] if m else "🍒 : MFI 다이버전스 없음")
 
-    return ("[캔들]\n" + "\n".join(candle)
+    return ("📊 비트코인(BTC) · 4시간봉 마감 신호\n\n"
+            + "[캔들]\n" + "\n".join(candle)
             + "\n\n────────────────\n"
             + "[보조 지표]\n" + "\n".join(ind))
 
