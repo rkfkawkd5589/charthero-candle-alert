@@ -298,7 +298,7 @@ def main():
         print("신호 없음 — 발송 생략")
         return
 
-    msg = "[보조 지표]\n\n" + "\n".join(fired)
+    msg = "📊 비트코인(BTC) · 4시간봉 마감 신호\n\n[보조 지표]\n\n" + "\n".join(fired)
     print(msg)
     print("---")
     print(send(msg))

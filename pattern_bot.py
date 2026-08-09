@@ -128,7 +128,7 @@ def classify(closed):
 
 
 def build_message(r):
-    lines = ["[캔들]", ""]
+    lines = ["📊 비트코인(BTC) · 4시간봉 마감 신호", "", "[캔들]", ""]
     lines.append("🟩 : 양봉" if r["bull"] else ("🟥 : 음봉" if r["bear"] else "➖ : 보합"))
     if r["doji"]:
         lines.append("🐕 : 도지 캔들")
